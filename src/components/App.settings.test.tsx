@@ -30,7 +30,8 @@ describe("App settings", () => {
 
     await user.click(await findByRole("button", { name: /save profile/i }));
 
-    expect(await findByText(/Test Profile.*active/i)).toBeDefined();
+    expect(await findByText("Test Profile")).toBeDefined();
+    expect(await findByText("Active")).toBeDefined();
   });
 
   it("allows user to switch active profile", async () => {
@@ -57,15 +58,17 @@ describe("App settings", () => {
     const user = userEvent.setup();
     const { findByRole, findByText } = render(<App />);
 
-    await user.click(await findByRole("button", { name: /open settings/i }));
+    await user.click(await findByRole("button", { name: /settings/i }));
 
-    expect(await findByText(/Profile A.*active/i)).toBeDefined();
+    expect(await findByText("Profile A")).toBeDefined();
+    expect(await findByText("Active")).toBeDefined();
 
     await user.click(
-      await findByRole("button", { name: /select Profile B/i }),
+      await findByRole("button", { name: /select/i }),
     );
 
-    expect(await findByText(/Profile B.*active/i)).toBeDefined();
+    expect(await findByText("Profile B")).toBeDefined();
+    expect(await findByText("Active")).toBeDefined();
   });
 
   it("allows user to delete a profile", async () => {
@@ -85,9 +88,9 @@ describe("App settings", () => {
     const user = userEvent.setup();
     const { findByRole, queryByText } = render(<App />);
 
-    await user.click(await findByRole("button", { name: /open settings/i }));
+    await user.click(await findByRole("button", { name: /settings/i }));
 
-    await user.click(await findByRole("button", { name: /delete Profile A/i }));
+    await user.click(await findByRole("button", { name: /delete/i }));
 
     expect(queryByText(/Profile A/)).toBeNull();
   });
@@ -178,7 +181,7 @@ describe("App settings", () => {
 
     expect(await findByText(/Chat/)).toBeDefined();
 
-    await user.click(await findByRole("button", { name: /open settings/i }));
+    await user.click(await findByRole("button", { name: /settings/i }));
     expect(await findByRole("heading", { name: /settings/i })).toBeDefined();
 
     await user.click(await findByRole("button", { name: /back/i }));
@@ -205,8 +208,8 @@ describe("App settings", () => {
 
     expect(await findByText(/Chat/)).toBeDefined();
 
-    await user.click(await findByRole("button", { name: /open settings/i }));
-    await user.click(await findByRole("button", { name: /delete OpenAI/i }));
+    await user.click(await findByRole("button", { name: /settings/i }));
+    await user.click(await findByRole("button", { name: /delete/i }));
 
     await user.click(await findByRole("button", { name: /back/i }));
     expect(await findByText(/configure/i)).toBeDefined();

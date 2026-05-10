@@ -19,11 +19,11 @@ export function App() {
   }, []);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="global-error">Error: {error}</div>;
   }
 
   if (profiles === null) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   const hasProfile = profiles.length > 0;
@@ -42,18 +42,29 @@ export function App() {
 
   if (!hasProfile) {
     return (
-      <div>
+      <div className="empty-state">
         <p>Welcome! Please configure your API settings to get started.</p>
-        <button onClick={() => setShowSettings(true)}>Open Settings</button>
+        <button className="btn btn-primary" onClick={() => setShowSettings(true)}>
+          Open Settings
+        </button>
       </div>
     );
   }
 
   return (
-    <div>
-      <div>
-        Chat {activeProfile ? `— ${activeProfile.name}` : ""}
-        <button onClick={() => setShowSettings(true)}>Open Settings</button>
+    <div className="app">
+      <div className="header">
+        <span className="header-title">
+          Chat{activeProfile ? ` — ${activeProfile.name}` : ""}
+        </span>
+        <div className="header-actions">
+          <button
+            className="btn btn-small"
+            onClick={() => setShowSettings(true)}
+          >
+            Settings
+          </button>
+        </div>
       </div>
       {activeProfile && <ChatPanel profile={activeProfile} />}
     </div>

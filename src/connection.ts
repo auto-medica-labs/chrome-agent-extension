@@ -13,6 +13,10 @@ export async function testConnection(
       return { success: true, message: "Connection successful" };
     } else if (response.status === 401) {
       return { success: false, message: "Invalid API key" };
+    } else if (response.status === 429) {
+      return { success: false, message: "Rate limited — retry later." };
+    } else if (response.status >= 500) {
+      return { success: false, message: "Server error — retry later." };
     } else {
       return {
         success: false,

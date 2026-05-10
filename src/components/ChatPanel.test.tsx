@@ -93,7 +93,7 @@ describe("ChatPanel", () => {
     await user.type(input, "Hi");
     await user.click(await findByRole("button", { name: /send/i }));
 
-    const abortBtn = await findByRole("button", { name: /abort/i });
+    const abortBtn = await findByRole("button", { name: /stop/i });
     await user.click(abortBtn);
 
     expect(abortCalled).toBe(true);

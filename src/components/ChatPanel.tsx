@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import type { Profile } from "../storage";
-import { streamChatCompletion, type ChatMessage } from "../chat";
+import { streamChatCompletion, ChatError, type ChatMessage } from "../chat";
 
 interface Message extends ChatMessage {
   id: string;
@@ -14,12 +14,14 @@ export function ChatPanel({ profile }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleSubmit = useCallback(async () => {
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
 
+    setError(null);
     const userMessage: Message = {
       id: `${Date.now()}-user`,
       role: "user",
@@ -59,7 +61,11 @@ export function ChatPanel({ profile }: ChatPanelProps) {
       );
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
-        // Silently ignore abort
+        // Abort is user-initiated — partial response stays visible
+      } else if (err instanceof ChatError) {
+        setError(err.message);
+      } else {
+        setError("Could not reach the API — check your endpoint and retry.");
       }
     } finally {
       setIsLoading(false);
@@ -76,30 +82,51 @@ export function ChatPanel({ profile }: ChatPanelProps) {
   }, []);
 
   return (
-    <div>
-      <div>
-        <button onClick={clearMessages}>Clear conversation</button>
+    <div className="chat-panel">
+      <div className="header">
+        <span className="header-title">Conversation</span>
+        <button className="btn btn-small" onClick={clearMessages}>
+          Clear
+        </button>
       </div>
-      <div role="log" aria-live="polite">
+      <div className="chat-messages" role="log" aria-live="polite">
         {messages.map((m) => (
-          <div key={m.id} data-testid={`message-${m.role}`}>
+          <div
+            key={m.id}
+            className={`message ${
+              m.role === "user" ? "message-user" : "message-assistant"
+            }`}
+            data-testid={`message-${m.role}`}
+          >
             {m.content}
           </div>
         ))}
       </div>
-      <input
-        role="textbox"
-        aria-label="Message input"
-        value={input}
-        disabled={isLoading}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) =>
-          e.key === "Enter" && !e.shiftKey && handleSubmit()
-        }
-      />
-      <button onClick={isLoading ? stop : handleSubmit}>
-        {isLoading ? "Abort" : "Send"}
-      </button>
+      {error && (
+        <div className="chat-error" role="alert">
+          {error}
+        </div>
+      )}
+      <div className="chat-input-bar">
+        <input
+          className="chat-input"
+          role="textbox"
+          aria-label="Message input"
+          placeholder="Type a message..."
+          value={input}
+          disabled={isLoading}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) =>
+            e.key === "Enter" && !e.shiftKey && handleSubmit()
+          }
+        />
+        <button
+          className={`btn ${isLoading ? "btn-danger" : "btn-primary"}`}
+          onClick={isLoading ? stop : handleSubmit}
+        >
+          {isLoading ? "Stop" : "Send"}
+        </button>
+      </div>
     </div>
   );
 }

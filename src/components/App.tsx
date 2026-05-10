@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getProfiles, getActiveProfile, type Profile } from "../storage";
 import { SettingsPanel } from "./SettingsPanel";
+import { ChatPanel } from "./ChatPanel";
 
 export function App() {
   const [showSettings, setShowSettings] = useState(false);
@@ -52,8 +53,9 @@ export function App() {
     <div>
       <div>
         Chat {activeProfile ? `— ${activeProfile.name}` : ""}
+        <button onClick={() => setShowSettings(true)}>Open Settings</button>
       </div>
-      <button onClick={() => setShowSettings(true)}>Open Settings</button>
+      {activeProfile && <ChatPanel profile={activeProfile} />}
     </div>
   );
 }

@@ -13,11 +13,12 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/bun": "latest",
     "@types/chrome": "^0.0.300",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@testing-library/react": "^16.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "happy-dom": "^17.0.0",
     "typescript": "^5",

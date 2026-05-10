@@ -26,6 +26,13 @@ const store = new Map<string, unknown>();
         }
         if (cb) cb();
       },
+      remove: (keys: string | string[], cb?: () => void) => {
+        const keyList = Array.isArray(keys) ? keys : [keys];
+        for (const key of keyList) {
+          store.delete(key);
+        }
+        if (cb) cb();
+      },
     },
   },
 };
@@ -34,4 +41,4 @@ export function resetChromeStore() {
   store.clear();
 }
 
-export { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+export { render, screen, fireEvent, waitFor, cleanup, act } from "@testing-library/react";

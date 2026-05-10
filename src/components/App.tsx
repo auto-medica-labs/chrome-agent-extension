@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
-import { getProfiles, type Profile } from "../storage";
+import { getProfiles, getActiveProfile, type Profile } from "../storage";
+import { SettingsPanel } from "./SettingsPanel";
 
 export function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [profiles, setProfiles] = useState<Profile[] | null>(null);
+  const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getProfiles()
       .then(setProfiles)
+      .catch(() => setError("Could not access storage."));
+    getActiveProfile()
+      .then(setActiveProfile)
       .catch(() => setError("Could not access storage."));
   }, []);
 
@@ -24,10 +29,13 @@ export function App() {
 
   if (showSettings) {
     return (
-      <div>
-        <h2>Settings</h2>
-        <button onClick={() => setShowSettings(false)}>Back</button>
-      </div>
+      <SettingsPanel
+        onBack={async () => {
+          setShowSettings(false);
+          setProfiles(await getProfiles());
+          setActiveProfile(await getActiveProfile());
+        }}
+      />
     );
   }
 
@@ -40,5 +48,12 @@ export function App() {
     );
   }
 
-  return <div>Chat</div>;
+  return (
+    <div>
+      <div>
+        Chat {activeProfile ? `— ${activeProfile.name}` : ""}
+      </div>
+      <button onClick={() => setShowSettings(true)}>Open Settings</button>
+    </div>
+  );
 }

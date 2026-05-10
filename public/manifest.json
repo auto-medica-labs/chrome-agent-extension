@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "AI Browser Extension",
+  "version": "0.1.0",
+  "description": "Chat with AI in your browser side panel",
+  "permissions": ["sidePanel", "storage"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Open AI Side Panel"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

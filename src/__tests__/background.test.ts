@@ -13,7 +13,6 @@ const chromeMock = {
 // Merge with existing chrome mock instead of overwriting
 // @ts-expect-error global chrome assignment
 (globalThis.chrome ??= {});
-// @ts-expect-error global chrome assignment
 Object.assign(globalThis.chrome, chromeMock);
 
 describe("background script", () => {

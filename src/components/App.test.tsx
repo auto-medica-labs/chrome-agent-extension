@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach } from "bun:test";
-import { render, fireEvent, cleanup, resetChromeStore } from "../test-utils";
+import {
+  render,
+  fireEvent,
+  cleanup,
+  resetChromeStore,
+} from "../__tests__/test-utils";
 import { App } from "./App";
 
 describe("App", () => {
@@ -10,7 +15,9 @@ describe("App", () => {
   it("renders empty state with settings CTA when no profile exists", async () => {
     const { findByText, findByRole } = render(<App />);
     expect(await findByText(/configure/i)).toBeDefined();
-    expect(await findByRole("button", { name: /open settings/i })).toBeDefined();
+    expect(
+      await findByRole("button", { name: /open settings/i }),
+    ).toBeDefined();
   });
 
   it("opens settings panel without page reload when CTA is clicked", async () => {

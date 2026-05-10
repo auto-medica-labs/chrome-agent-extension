@@ -9,8 +9,7 @@ global.window = win;
 global.navigator = win.navigator;
 
 const store = new Map<string, unknown>();
-// @ts-expect-error minimal chrome mock
-global.chrome = {
+(global as any).chrome = {
   storage: {
     local: {
       get: (keys: string | string[], cb: (result: Record<string, unknown>) => void) => {

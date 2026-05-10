@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach } from "bun:test";
-import { getProfiles, saveProfile } from "./storage";
+import { getProfiles, saveProfile } from "../storage";
 
 const store = new Map<string, unknown>();
 
-// @ts-expect-error minimal chrome mock
-global.chrome = {
+(global as any).chrome = {
   storage: {
     local: {
-      get: (keys: string | string[], cb: (result: Record<string, unknown>) => void) => {
+      get: (
+        keys: string | string[],
+        cb: (result: Record<string, unknown>) => void,
+      ) => {
         const result: Record<string, unknown> = {};
         const keyList = Array.isArray(keys) ? keys : [keys];
         for (const key of keyList) {
@@ -36,7 +38,13 @@ describe("storage", () => {
   });
 
   it("can save and retrieve a profile", async () => {
-    const profile = { id: "1", name: "OpenAI", baseUrl: "https://api.openai.com", model: "gpt-4", apiKey: "sk-test" };
+    const profile = {
+      id: "1",
+      name: "OpenAI",
+      baseUrl: "https://api.openai.com",
+      model: "gpt-4",
+      apiKey: "sk-test",
+    };
     await saveProfile(profile);
     const profiles = await getProfiles();
     expect(profiles).toEqual([profile]);

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import type { Profile } from "../storage";
 import { streamChatCompletion, ChatError, type ChatMessage } from "../chat";
+import { renderMarkdown } from "../markdown";
 
 interface Message extends ChatMessage {
   id: string;
@@ -90,17 +91,37 @@ export function ChatPanel({ profile }: ChatPanelProps) {
         </button>
       </div>
       <div className="chat-messages" role="log" aria-live="polite">
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`message ${
-              m.role === "user" ? "message-user" : "message-assistant"
-            }`}
-            data-testid={`message-${m.role}`}
-          >
-            {m.content}
-          </div>
-        ))}
+        {messages.map((m) =>
+          m.role === "user" ? (
+            <div
+              key={m.id}
+              className="message message-user"
+              data-testid="message-user"
+            >
+              {m.content}
+            </div>
+          ) : (
+            <div
+              key={m.id}
+              className="message message-assistant markdown-body"
+              data-testid="message-assistant"
+            >
+              {m.content ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: renderMarkdown(m.content),
+                  }}
+                />
+              ) : (
+                <span className="typing-dots" aria-label="AI is typing">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              )}
+            </div>
+          ),
+        )}
       </div>
       {error && (
         <div className="chat-error" role="alert">

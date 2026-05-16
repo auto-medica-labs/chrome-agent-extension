@@ -17,11 +17,21 @@ function generateId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function emptyForm() {
+  return {
+    name: "",
+    baseUrl: "https://api.openai.com/v1",
+    model: "gpt-4o-mini",
+    apiKey: "",
+  };
+}
+
 export function SettingsPanel({ onBack }: SettingsPanelProps) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeProfileId, setActiveProfileIdState] = useState<string | null>(
     null,
   );
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
   const [model, setModel] = useState("gpt-4o-mini");
@@ -41,9 +51,28 @@ export function SettingsPanel({ onBack }: SettingsPanelProps) {
     setActiveProfileIdState(await getActiveProfileId());
   };
 
+  const resetForm = () => {
+    setEditingId(null);
+    const f = emptyForm();
+    setName(f.name);
+    setBaseUrl(f.baseUrl);
+    setModel(f.model);
+    setApiKey(f.apiKey);
+    setTestResult(null);
+  };
+
+  const handleEdit = (profile: Profile) => {
+    setEditingId(profile.id);
+    setName(profile.name);
+    setBaseUrl(profile.baseUrl);
+    setModel(profile.model);
+    setApiKey(profile.apiKey);
+    setTestResult(null);
+  };
+
   const handleSave = async () => {
     const profile: Profile = {
-      id: generateId(),
+      id: editingId ?? generateId(),
       name,
       baseUrl,
       model,
@@ -54,11 +83,7 @@ export function SettingsPanel({ onBack }: SettingsPanelProps) {
       await setActiveProfileId(profile.id);
     }
     await refreshProfiles();
-    setName("");
-    setBaseUrl("https://api.openai.com/v1");
-    setModel("gpt-4o-mini");
-    setApiKey("");
-    setTestResult(null);
+    resetForm();
   };
 
   const handleSelect = async (id: string) => {
@@ -71,8 +96,14 @@ export function SettingsPanel({ onBack }: SettingsPanelProps) {
     if (activeProfileId === id) {
       await setActiveProfileId(null);
     }
+    // If the deleted profile was being edited, reset the form
+    if (editingId === id) {
+      resetForm();
+    }
     await refreshProfiles();
   };
+
+  const isEditing = editingId !== null;
 
   return (
     <div className="settings-panel">
@@ -85,7 +116,9 @@ export function SettingsPanel({ onBack }: SettingsPanelProps) {
 
       <div className="settings-body">
         <div className="settings-section">
-          <span className="settings-section-title">Add Profile</span>
+          <span className="settings-section-title">
+            {isEditing ? `Edit Profile — ${name}` : "Add Profile"}
+          </span>
           <div className="form-group">
             <label className="form-label" htmlFor="profile-name">Name</label>
             <input
@@ -129,8 +162,13 @@ export function SettingsPanel({ onBack }: SettingsPanelProps) {
           </div>
           <div className="form-row">
             <button className="btn btn-primary" onClick={handleSave}>
-              Save Profile
+              {isEditing ? "Update Profile" : "Save Profile"}
             </button>
+            {isEditing && (
+              <button className="btn" onClick={resetForm}>
+                Cancel
+              </button>
+            )}
             <button
               className="btn"
               onClick={async () => {
@@ -182,6 +220,12 @@ export function SettingsPanel({ onBack }: SettingsPanelProps) {
                         Select
                       </button>
                     )}
+                    <button
+                      className="btn btn-small"
+                      onClick={() => handleEdit(p)}
+                    >
+                      Edit
+                    </button>
                     <button
                       className="btn btn-small btn-danger"
                       onClick={() => handleDelete(p.id)}

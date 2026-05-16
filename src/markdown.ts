@@ -2,7 +2,6 @@ import { marked, type TokenizerAndRendererExtension } from "marked";
 
 // Configure marked for safe rendering in the side panel
 marked.setOptions({
-  breaks: true,    // convert \n to <br> (like GitHub)
   gfm: true,       // GitHub Flavored Markdown (tables, strikethrough, etc.)
 });
 

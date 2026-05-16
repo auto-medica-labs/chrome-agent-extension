@@ -30,9 +30,11 @@ describe("App with storage", () => {
           apiKey: "sk-test",
         },
       ],
+      activeProfileId: "1",
     });
-    const { findByText, queryByText } = render(<App />);
-    expect(await findByText(/chat/i)).toBeDefined();
+    const { findByLabelText, queryByText } = render(<App />);
+    // ChatPanel renders a textarea with aria-label "Message input"
+    expect(await findByLabelText(/message input/i)).toBeDefined();
     expect(queryByText(/configure/i)).toBeNull();
   });
 });
